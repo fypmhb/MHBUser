@@ -24,13 +24,12 @@ public class Validation {
         }
         return true;
     }
-    public boolean validateEmail(EditText etEmail, String sEmail,String purpose) {
+    public boolean validateEmail(EditText etEmail, String sEmail) {
 
         if (TextUtils.isEmpty(sEmail)) {
             etEmail.requestFocus();
             return false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(sEmail).matches()) {
-            if(!purpose.equals("corectness"))
             etEmail.setError("Please enter a valid email");
             etEmail.requestFocus();
             return false;

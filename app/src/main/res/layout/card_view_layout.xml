@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                   android:orientation="vertical"
+                                   android:layout_width="match_parent"
+                                   android:layout_height="@dimen/_120sdp"
+                                   app:cardBackgroundColor="#fff"
+                                   app:cardCornerRadius="@dimen/_5sdp"
+                                   app:cardUseCompatPadding="true"
+                                   app:contentPadding="@dimen/_5sdp">
+
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+
+            <ImageView
+                    android:id="@+id/iv_cardView"
+                    android:layout_width="@dimen/_120sdp"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:layout_alignParentStart="true"
+                    android:background="@drawable/ic_loading_image"
+                    android:scaleType="centerCrop" />
+
+
+            <TextView
+                    android:id="@+id/tv_cardView_hallName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:text="@string/HallName"
+                    android:layout_toEndOf="@id/iv_cardView"
+                    android:maxLines="1"
+                    android:textColor="#000"
+                    android:textSize="@dimen/_15ssp"
+                    android:textStyle="bold" />
+
+
+        <TextView
+                android:id="@+id/tv_cardView_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:layout_below="@id/tv_cardView_hallName"
+                android:layout_toEndOf="@id/iv_cardView"
+                android:maxLines="2"
+                android:text="@string/Location"
+                android:textColor="#000"
+                android:textSize="@dimen/_12ssp" />
+
+        <TextView
+                android:id="@+id/tv_cardView_phone_no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_below="@id/tv_cardView_location"
+                android:layout_toEndOf="@id/iv_cardView"
+                android:maxLines="2"
+                android:text="Phone No"
+                android:textSize="@dimen/_12ssp" />
+
+        <TextView
+                android:id="@+id/tv_cardView_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_below="@id/tv_cardView_phone_no"
+                android:layout_toEndOf="@id/iv_cardView"
+                android:maxLines="2"
+                android:text="Email"
+                android:textSize="@dimen/_12ssp" />
+
+        <ToggleButton
+                android:id="@+id/iv_cardView_favourite"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:background="@drawable/ic_favourite_empty"
+                android:checked="false"
+                android:focusable="true"
+                android:layout_below="@id/tv_cardView_email"
+                android:layout_alignParentEnd="true"
+                android:text=" "
+                android:textOff=" "
+                android:textOn=" " />
+
+
+    </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>

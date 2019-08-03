@@ -60,7 +60,7 @@ public class ForgetPassword extends Fragment implements View.OnClickListener {
         if (v.getId() == R.id.btn_reset_password) {
             String sEmail = etResetEmail.getText().toString().trim();
 
-            if (!loginValidation.validateEmail(etResetEmail, sEmail,"validation"))
+            if (!loginValidation.validateEmail(etResetEmail, sEmail))
                 return;
 
             replaceFragment();
@@ -75,7 +75,7 @@ public class ForgetPassword extends Fragment implements View.OnClickListener {
         assert getFragmentManager() != null;
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         LogIn passEmail = new LogIn();
-        if (loginValidation.validateEmail(etResetEmail, etResetEmail.getText().toString().trim(),"corectness"))
+        if (loginValidation.validateEmail(etResetEmail, etResetEmail.getText().toString().trim()))
         {
             Bundle email = new Bundle();
             email.putString("email", etResetEmail.getText().toString().trim());

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:dist="http://schemas.android.com/apk/distribution"
           package="com.example.mhbuser">
+
+    <dist:module dist:instant="true"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.INTERNET"/> <!-- External storage permission -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/> <!-- gsf -->
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/> <!-- wifi state -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
     <application
             android:allowBackup="true"
@@ -9,6 +21,21 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity android:name=".Activities.FavouritesHallMarquee"
+        android:label="Favourites">
+        </activity>
+        <activity
+                android:name=".Activities.BookingDetail"
+                android:label="Booking Detail">
+        </activity>
+        <activity
+                android:name=".Activities.HallMarqueeGenaralDetail"
+                android:label="General Info">
+        </activity>
+        <activity
+                android:name=".Activities.HallMarqueeShowDetail"
+                android:label="Halls Details">
+        </activity>
         <activity
                 android:name=".Activities.DashBoard"
                 android:label="@string/title_activity_dash_board"

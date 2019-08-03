@@ -1,6 +1,7 @@
 package com.example.mhbuser.Fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -9,11 +10,8 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,10 +20,17 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.mhbuser.Activities.DashBoard;
 import com.example.mhbuser.Activities.LogInSignUp;
+import com.example.mhbuser.Classes.CNetworkConnection;
 import com.example.mhbuser.Classes.Validation;
 import com.example.mhbuser.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class LogIn extends Fragment implements View.OnClickListener {
+
+    private ProgressDialog progressDialog = null;
 
     private View fragment_view = null;
     private Context context = null;
@@ -34,7 +39,11 @@ public class LogIn extends Fragment implements View.OnClickListener {
             tvCreateOne = null;
     private EditText etEmail = null,
             etPassword = null;
+    private String sEmail=null,
+                    sPassword=null;
+
     Validation loginValidation = null;
+    private RelativeLayout rlCloseKeyboard = null;
     private ToggleButton tbShowHidePassword = null;
 
 
@@ -51,6 +60,7 @@ public class LogIn extends Fragment implements View.OnClickListener {
 
 
         //setting click listeners on buttons
+        rlCloseKeyboard.setOnClickListener(this);
         tbShowHidePassword.setOnClickListener(this);
         tvForgetPassword.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
@@ -69,6 +79,8 @@ public class LogIn extends Fragment implements View.OnClickListener {
     private void connectivity() {
         context = getActivity();
 
+        rlCloseKeyboard = (RelativeLayout) fragment_view.findViewById(R.id.rl_hide_soft_keyboard);
+
         etEmail = (EditText) fragment_view.findViewById(R.id.et_email);
         etPassword = (EditText) fragment_view.findViewById(R.id.et_password);
         tbShowHidePassword = (ToggleButton) fragment_view.findViewById(R.id.tb_show_hide_password);
@@ -77,10 +89,15 @@ public class LogIn extends Fragment implements View.OnClickListener {
         tvForgetPassword = (TextView) fragment_view.findViewById(R.id.tv_forget_password);
         tvCreateOne = (TextView) fragment_view.findViewById(R.id.tv_create_one);
         loginValidation = new Validation();
+        progressDialog = new ProgressDialog(context);
     }
 
     @Override
     public void onClick(View v) {
+
+        if (v.getId() == R.id.rl_hide_soft_keyboard) {
+            hideSoftKeyboard(v);
+        }
         //hide or show password
         if (v.getId() == R.id.tb_show_hide_password) {
             if (tbShowHidePassword.isChecked()) {
@@ -99,7 +116,7 @@ public class LogIn extends Fragment implements View.OnClickListener {
             assert getFragmentManager() != null;
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ForgetPassword passEmail = new ForgetPassword();
-            if (loginValidation.validateEmail(etEmail, etEmail.getText().toString().trim(),"corectness"))
+            if (loginValidation.validateEmail(etEmail, etEmail.getText().toString().trim()))
             {
                 Bundle email = new Bundle();
                 email.putString("email", etEmail.getText().toString().trim());
@@ -115,22 +132,83 @@ public class LogIn extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void logIn() {
-        String sEmail = etEmail.getText().toString().trim();
-        String sPassword = etPassword.getText().toString().trim();
+    private void hideSoftKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        assert inputMethodManager != null;
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
-        if (!loginValidation.validateEmail(etEmail, sEmail,"validation")) {
-            etEmail.setBackground(context.getResources().getDrawable(R.drawable.round_red));
+    private void logIn() {
+         sEmail = etEmail.getText().toString().trim();
+         sPassword = etPassword.getText().toString().trim();
+
+
+        if (!allValidation())
+            return;
+
+        //check Internet Connection
+        if (!checkInternetConnection()) {
             return;
         }
+
+        logInUserToFireBase();
+
+
+    }
+
+    private boolean checkInternetConnection() {
+        // if there is no internet connection
+        CNetworkConnection CNetworkConnection = new CNetworkConnection();
+        if (CNetworkConnection.isConnected(context)) {
+            CNetworkConnection.buildDialog(context).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void logInUserToFireBase() {
+
+        progressDialog.setMessage("LogIn...");
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signInWithEmailAndPassword(sEmail, sPassword)
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        progressDialog.dismiss();
+                        Intent i=new Intent(getContext(), DashBoard.class);
+                        startActivity(i);
+                        LogInSignUp.fin.finish();
+                        Toast.makeText(context, "Logion", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private boolean allValidation() {
+
+        if (!loginValidation.validateEmail(etEmail, sEmail)) {
+            etEmail.setBackground(context.getResources().getDrawable(R.drawable.round_red));
+            return false;
+        } else
+            etEmail.setBackground(context.getResources().getDrawable(R.drawable.round_white));
+
         if (!loginValidation.ValidatePassword(etPassword, sPassword)) {
             etPassword.setBackground(context.getResources().getDrawable(R.drawable.round_red));
-            return;
-        }
+            return false;
+        } else
+            etPassword.setBackground(context.getResources().getDrawable(R.drawable.round_white));
 
-        Intent i=new Intent(getContext(), DashBoard.class);
-        startActivity(i);
-        LogInSignUp.fin.finish();
-        Toast.makeText(context, "Logion", Toast.LENGTH_SHORT).show();
+        return true;
     }
 }

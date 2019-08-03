@@ -4,11 +4,12 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_10sdp"
-        android:clickable="true"
-        android:focusable="true">
+            android:id="@+id/rl_hide_soft_keyboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_10sdp"
+            android:clickable="true"
+            android:focusable="true">
 
         <ImageView
             android:id="@+id/iv_login"
@@ -158,14 +159,16 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_create_one"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_do_not_have_account"
-                android:layout_centerHorizontal="true"
-                android:focusable="true"
-                android:imeOptions="actionDone"
-                android:text="Create one" />
+                    android:id="@+id/tv_create_one"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_do_not_have_account"
+                    android:layout_centerHorizontal="true"
+                    android:focusable="true"
+                    android:imeOptions="actionDone"
+                    android:text="Create one"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="italic|bold" />
         </RelativeLayout>
     </RelativeLayout>
 </ScrollView>

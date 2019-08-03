@@ -25,4 +25,9 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Tools</string>
     <string name="menu_send">Send</string>
+    <string name="title">Title</string>
+    <string name="HallName">Hall Name</string>
+    <string name="price">Per Haed</string>
+    <string name="Location">Loaction</string>
+    <string name="PhoneNo">Phone No:</string>
 </resources>
