@@ -22,17 +22,16 @@ public class FDashBoard extends Fragment {
     private DashBoardAdapter adapter;
     private List<CDashBoardData> albumList;
     private String sHallMarquee =null;
+    private String sDashboardFavourite =null;
 
-
-    public FDashBoard(String sHallMarquee) {
-        this.sHallMarquee = sHallMarquee;
-    }
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fregment_hall_marque_tabs, container, false);
 
 
+        sHallMarquee = getArguments().getString("sHallMarquee");
+        sDashboardFavourite = getArguments().getString("sDashboardFavourite");
         RecyclerView recyclerView = v.findViewById(R.id.recycle_view);
         albumList = new ArrayList<>();
         adapter = new DashBoardAdapter(getActivity(), albumList);
@@ -41,6 +40,7 @@ public class FDashBoard extends Fragment {
         recyclerView.setAdapter(adapter);
 
         //getting data
+
         getData();
 
         return v;
@@ -48,9 +48,14 @@ public class FDashBoard extends Fragment {
     }
 
     private void getData() {
+        CGetDataFromFireBaseForDashBoard cGetDataFromFireBaseForDashBoard = new CGetDataFromFireBaseForDashBoard(getActivity());
 
-        CGetDataFromFireBaseForDashBoard cGetDataFromFireBaseForDashBoard =new CGetDataFromFireBaseForDashBoard(getActivity());
-        cGetDataFromFireBaseForDashBoard.prepareCardViewDetail(sHallMarquee,albumList,adapter);
+        if(sDashboardFavourite.equals("Dashboard"))
+            cGetDataFromFireBaseForDashBoard.prepareCardViewDashboard(sHallMarquee, albumList, adapter);
+        else
+            cGetDataFromFireBaseForDashBoard.prepareCardViewFavourite(sHallMarquee, albumList, adapter);
+
+
     }
 
 

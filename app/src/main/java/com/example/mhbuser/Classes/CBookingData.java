@@ -2,15 +2,15 @@ package com.example.mhbuser.Classes;
 
 public class CBookingData {
 
-    private String sRequestTime;
-    private String sSubHallName;
-    private String sFunctionDate;
-    private String sNoOfGuests;
-    private String sFunctionTiming;
-    private String sDish;
-    private String sPerHead;
-    private String sEstimatedBudget;
-    private String sOtherDetail;
+    private String sRequestTime=null;
+    private String sSubHallName=null;
+    private String sFunctionDate=null;
+    private String sNoOfGuests=null;
+    private String sFunctionTiming=null;
+    private String sDish=null;
+    private String sPerHead=null;
+    private String sEstimatedBudget=null;
+    private String sOtherDetail=null;
 
     public CBookingData() {
     }

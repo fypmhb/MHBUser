@@ -36,6 +36,10 @@ public class DashBoard extends AppCompatActivity
         setContentView(R.layout.activity_dash_board);
 
         fin = this;
+        // favourite reload
+        if(FavouritesHallMarquee.fin!=null) {
+            FavouritesHallMarquee.fin=null;
+        }
 
         if (!checkInternetConnection()) {
             return;
@@ -81,15 +85,25 @@ public class DashBoard extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
 
-                Fragment fragment = null;
+
 
                 switch (position) {
                     case 0: {
-                        fragment = new FDashBoard("Hall");
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("sHallMarquee","Hall");
+                        bundle.putString("sDashboardFavourite","Dashboard");
+                        FDashBoard fragment = new FDashBoard();
+                        fragment.setArguments(bundle);
                         return fragment;
                     }
                     case 1: {
-                        fragment = new FDashBoard("Marquee");
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("sHallMarquee","Marquee");
+                        bundle.putString("sDashboardFavourite","Dashboard");
+                        FDashBoard fragment = new FDashBoard();
+                        fragment.setArguments(bundle);
                         return fragment;
                     }
                 }
@@ -158,10 +172,7 @@ public class DashBoard extends AppCompatActivity
 
         } else if (id == R.id.nav_profile) {
 
-       /*     assert getFragmentManager() != null;
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.LogInSignUp, new FUserProfile());
-            ft.commit();*/
+            startActivity(new Intent(DashBoard.this,Profile.class));
 
         } else if (id == R.id.nav_aboutus) {
 

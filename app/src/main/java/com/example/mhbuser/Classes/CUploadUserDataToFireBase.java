@@ -28,49 +28,61 @@ public class CUploadUserDataToFireBase {
     private Context context = null;
     private Uri uriUserProfile = null;
     private StorageReference storageReference;
-
-    private String sUserEmail = null,
-            sPassword = null,
-            sUserProfileName = null,
-            sUserProfileDownloadUri,
-            sUserFirstName = null,
-            sUserLastName = null,
-            sUserPhoneNo = null,
-            sUserCity = null,
-            sUserLocation = null;
-
+    private String sUserProfileName = null;
     private String userId = null;
+    String sPassword=null;
+    private Uri oldPicUri=null;
+    private CSignUpData cSignUpData=null;
+    private String picDelete="no";
 
 
-    public CUploadUserDataToFireBase(Context context, Uri uriUserProfile, String sUserEmail,
-                                     String sPassword, String sUserProfileName,
-                                     String sUserProfileDownloadUri,
-                                     String sUserFirstName, String sUserLastName,
-                                     String sUserPhoneNo, String sUserCity,
-                                     String sUserLocation) {
+
+    public CUploadUserDataToFireBase(Context context, Uri uriUserProfile, String sUserProfileName, String password,
+                                     CSignUpData cSignUpData
+                                     ) {
 
         this.context = context;
         this.uriUserProfile = uriUserProfile;
-        this.sUserEmail = sUserEmail;
-        this.sPassword = sPassword;
         this.sUserProfileName = sUserProfileName;
-        this.sUserProfileDownloadUri = sUserProfileDownloadUri;
-        this.sUserFirstName = sUserFirstName;
-        this.sUserLastName = sUserLastName;
-        this.sUserPhoneNo = sUserPhoneNo;
-        this.sUserCity = sUserCity;
-        this.sUserLocation = sUserLocation;
-
+        this.sPassword=password;
+        this.cSignUpData=cSignUpData;
         this.progressDialog = new ProgressDialog(context);
         this.storageReference = getInstance().getReference();
 
-        if (!this.sPassword.isEmpty())
             createUserOnFireBase();
-        else {
-            this.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            uploadDataToFireBase(userId);
-        }
+
     }
+    public CUploadUserDataToFireBase(Context context, Uri uriUserProfile, String sUserProfileName,Uri oldPicUri,
+                                     CSignUpData cSignUpData
+    ) {
+
+        this.context = context;
+        this.uriUserProfile = uriUserProfile;
+        this.sUserProfileName = sUserProfileName;
+        this.cSignUpData=cSignUpData;
+        this.oldPicUri=oldPicUri;
+        this.progressDialog = new ProgressDialog(context);
+        this.storageReference = getInstance().getReference();
+
+
+            this.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            picDelete="yess";
+            uploadDataToFireBase();
+    }
+    public CUploadUserDataToFireBase(Context context, CSignUpData cSignUpData) {
+
+        this.context = context;
+        this.cSignUpData=cSignUpData;
+        this.progressDialog = new ProgressDialog(context);
+        this.storageReference = getInstance().getReference();
+
+        this.userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        uploadData();
+    }
+
+
+
 
     public void createUserOnFireBase() {
 
@@ -81,7 +93,7 @@ public class CUploadUserDataToFireBase {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-        mAuth.createUserWithEmailAndPassword(sUserEmail, sPassword)
+        mAuth.createUserWithEmailAndPassword(cSignUpData.getsEmail(),sPassword)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -91,7 +103,7 @@ public class CUploadUserDataToFireBase {
 
                             progressDialog.dismiss();
 
-                            uploadDataToFireBase(userId);
+                            uploadDataToFireBase();
 
                         } else {
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
@@ -106,20 +118,27 @@ public class CUploadUserDataToFireBase {
                 });
     }
 
-    private void uploadDataToFireBase(String userId) {
+    private void uploadDataToFireBase() {
         //create storageReference
         storageReference = this.storageReference.child("Users")
                 .child(userId);
-        uploadUserProfileImage(userId);
+        uploadUserProfileImage();
     }
 
 
-    private void uploadUserProfileImage(final String userId) {
+    private void uploadUserProfileImage() {
 
         progressDialog.setMessage("Uploading User Profile...");
         progressDialog.show();
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
+
+        if(picDelete.equals("yess"))
+        {
+            StorageReference storageReference = getInstance().getReferenceFromUrl(oldPicUri.toString());
+            storageReference.delete();
+
+        }
 
         StorageReference newStorageReference = storageReference.child("Profile");
 
@@ -133,10 +152,10 @@ public class CUploadUserDataToFireBase {
                         while (!uriTask.isSuccessful()) ;
                         final Uri downloadUri = uriTask.getResult();
 
-                        sUserProfileDownloadUri = downloadUri.toString();
+                        cSignUpData.setsUserProfileImageUri(downloadUri.toString());
                         progressDialog.dismiss();
 
-                        uploadData(userId);
+                        uploadData();
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -149,21 +168,19 @@ public class CUploadUserDataToFireBase {
         });
     }
 
-    private void uploadData(final String userId) {
+    private void uploadData() {
 
         //setting progress bar title
         progressDialog.setMessage("Registering...");
         //show progress dialog
         progressDialog.show();
+        progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
-
-        CSignUpData CSignUpData = new CSignUpData(sUserFirstName, sUserLastName,
-                sUserProfileDownloadUri, sUserEmail, sUserPhoneNo, sUserCity, sUserLocation);
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("Users")
                 .document(userId)
-                .set(CSignUpData)
+                .set(cSignUpData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

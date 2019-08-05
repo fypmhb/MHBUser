@@ -12,6 +12,8 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.example.mhbuser.Activities.DashBoard;
+import com.example.mhbuser.Activities.FavouritesHallMarquee;
 import com.example.mhbuser.Activities.HallMarqueeGenaralDetail;
 import com.example.mhbuser.Classes.CDashBoardData;
 import com.example.mhbuser.R;
@@ -120,9 +122,7 @@ public class DashBoardAdapter extends RecyclerView.Adapter<DashBoardAdapter.MyVi
                     FirebaseAuth mAuth = FirebaseAuth.getInstance();
                     FirebaseFirestore fBFS = FirebaseFirestore.getInstance();
                     fBFS.collection("Favourites")
-                            .document(("fav"+(mAuth.getCurrentUser()).getUid())).collection(album.getsHallMarquee()).document(album.getsUid()).set(hashMap);
-
-
+                            .document((mAuth.getCurrentUser()).getUid()).collection(album.getsHallMarquee()+" id's").document(album.getsUid()).set(hashMap);
 
                 } else {
 
@@ -130,9 +130,15 @@ public class DashBoardAdapter extends RecyclerView.Adapter<DashBoardAdapter.MyVi
                     FirebaseAuth mAuth = FirebaseAuth.getInstance();
                     FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
                     firebaseFirestore.collection("Favourites")
-                            .document(mAuth.getCurrentUser().getUid()).collection(album.getsHallMarquee()).document(album.getsUid()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            .document(mAuth.getCurrentUser().getUid()).collection(album.getsHallMarquee()+" id's").document(album.getsUid()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+
+                            if(FavouritesHallMarquee.fin!=null) {
+                                FavouritesHallMarquee.fin.recreate();
+                                DashBoard.fin.recreate();
+                                FavouritesHallMarquee.fin=null;
+                            }
 
                         }
                     });

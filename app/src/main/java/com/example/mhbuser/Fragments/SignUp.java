@@ -24,10 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
-import com.example.mhbuser.Classes.CGetImageName;
-import com.example.mhbuser.Classes.CNetworkConnection;
-import com.example.mhbuser.Classes.CUploadUserDataToFireBase;
-import com.example.mhbuser.Classes.Validation;
+import com.example.mhbuser.Classes.*;
 import com.example.mhbuser.R;
 import com.santalu.maskedittext.MaskEditText;
 
@@ -53,6 +50,7 @@ public class SignUp extends Fragment implements View.OnClickListener {
             etUserLastName = null,
             etUserEmail = null,
             etUserCity = null,
+            etUserCountry=null,
             etUserLocation = null,
             etUserPassword = null,
             etUserConfirmPassword = null;
@@ -61,6 +59,7 @@ public class SignUp extends Fragment implements View.OnClickListener {
             sUserEmail = null,
             sUserPhoneNo = null,
             sUserCity = null,
+            sUserCountry=null,
             sUserLocation = null,
             sPassword = null,
             sConfirmPassword = null;
@@ -100,6 +99,7 @@ public class SignUp extends Fragment implements View.OnClickListener {
         etUserEmail = (EditText) fragment_view.findViewById(R.id.et_user_email);
         metUserPhoneNo = (MaskEditText) fragment_view.findViewById(R.id.met_phone);
         etUserCity = (EditText) fragment_view.findViewById(R.id.et_city);
+        etUserCountry=(EditText)fragment_view.findViewById(R.id.et_country);
         etUserLocation = (EditText) fragment_view.findViewById(R.id.et_location);
         etUserPassword = (EditText) fragment_view.findViewById(R.id.et_user_password);
         etUserConfirmPassword = (EditText) fragment_view.findViewById(R.id.et_confirm_password);
@@ -221,11 +221,10 @@ public class SignUp extends Fragment implements View.OnClickListener {
             return;
         }
 
-        //FireBase work
-        new CUploadUserDataToFireBase(context, uriUserProfile, sUserEmail, sPassword,
-                sUserProfileName, sUserProfileDownloadUri,
-                sUserFirstName, sUserLastName, sUserPhoneNo, sUserCity, sUserLocation);
+        CSignUpData cSignUpData=new CSignUpData(sUserFirstName,sUserFirstName,sUserEmail,sUserPhoneNo,sUserCity,sUserCountry,sUserLocation);
 
+        //FireBase work
+        new CUploadUserDataToFireBase(context, uriUserProfile,sUserProfileName,sPassword,cSignUpData);
 
     }
 
@@ -235,6 +234,7 @@ public class SignUp extends Fragment implements View.OnClickListener {
         sUserEmail = etUserEmail.getText().toString().trim();
         sUserPhoneNo = metUserPhoneNo.getText().toString().trim();
         sUserCity = etUserCity.getText().toString().trim();
+        sUserCountry=etUserCountry.getText().toString().trim();
         sUserLocation = etUserLocation.getText().toString().trim();
         sPassword = etUserPassword.getText().toString().trim();
         sConfirmPassword = etUserConfirmPassword.getText().toString().trim();
@@ -280,6 +280,12 @@ public class SignUp extends Fragment implements View.OnClickListener {
             return false;
         } else
             etUserCity.setBackground(context.getResources().getDrawable(R.drawable.round_white));
+
+        if (!signUpValidation.validateCity(etUserCountry, sUserCountry)) {
+            etUserCountry.setBackground(context.getResources().getDrawable(R.drawable.round_red));
+            return false;
+        } else
+            etUserCountry.setBackground(context.getResources().getDrawable(R.drawable.round_white));
 
         if (!signUpValidation.validateLocation(etUserLocation, sUserLocation)) {
             etUserLocation.setBackground(context.getResources().getDrawable(R.drawable.round_red));

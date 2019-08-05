@@ -1,5 +1,6 @@
 package com.example.mhbuser.Activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -14,11 +15,13 @@ public class FavouritesHallMarquee extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    public static Activity fin=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites_hall_marquee);
+        fin=this;
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -41,15 +44,25 @@ public class FavouritesHallMarquee extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
 
-            Fragment fragment = null;
+
 
             switch (position) {
                 case 0: {
-                    fragment = new FDashBoard("Hall");
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("sHallMarquee","Hall");
+                    bundle.putString("sDashboardFavourite","Favourite");
+                    FDashBoard fragment = new FDashBoard();
+                    fragment.setArguments(bundle);
                     return fragment;
                 }
                 case 1: {
-                    fragment = new FDashBoard("Marquee");
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("sHallMarquee","Marquee");
+                    bundle.putString("sDashboardFavourite","Favourite");
+                    FDashBoard fragment = new FDashBoard();
+                    fragment.setArguments(bundle);
                     return fragment;
                 }
             }

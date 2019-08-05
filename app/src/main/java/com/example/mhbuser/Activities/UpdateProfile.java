@@ -1,4 +1,4 @@
-package com.example.mhbuser.Fragments;
+package com.example.mhbuser.Activities;
 
 import android.Manifest;
 import android.app.Activity;
@@ -8,42 +8,33 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
-import com.example.mhbuser.Classes.CGetImageName;
-import com.example.mhbuser.Classes.CNetworkConnection;
-import com.example.mhbuser.Classes.CUploadUserDataToFireBase;
-import com.example.mhbuser.Classes.Validation;
+import com.example.mhbuser.Classes.*;
 import com.example.mhbuser.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.santalu.maskedittext.MaskEditText;
 
 import java.io.ByteArrayOutputStream;
 
-import static android.app.Activity.RESULT_OK;
-
-public class FUserProfile extends Fragment implements View.OnClickListener {
-
+public class UpdateProfile extends AppCompatActivity implements View.OnClickListener {
 
     public final static int IMAGE_REQUEST_CODE = 121;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE=120;
 
     private Context context = null;
-    private View fragment_view = null;
     private RelativeLayout rlCloseKeyboard = null;
-    //private SelectImagesAdapter selectImagesAdapter = null;
     private ImageView ivUserProfile = null,
             ivAddUserProfile = null;
     private String sUserProfileName = null,
@@ -53,58 +44,89 @@ public class FUserProfile extends Fragment implements View.OnClickListener {
             etUserLastName = null,
             etUserEmail = null,
             etUserCity = null,
-            etUserLocation = null,
-            etUserPassword = null,
-            etUserConfirmPassword = null;
+            etUserCountry=null,
+            etUserLocation = null;
     private String sUserFirstName = null,
             sUserLastName = null,
             sUserEmail = null,
             sUserPhoneNo = null,
             sUserCity = null,
-            sUserLocation = null,
-            sPassword = null,
-            sConfirmPassword = null;
+            sUserCountry=null,
+            sUserLocation = null;
     private MaskEditText metUserPhoneNo = null;
-    private Button btnUserSignUp = null;
-    private TextView tvAlreadyHaveOne = null;
+    private Button btnUpdate = null;
+    private  CSignUpData cSignUpData=null;
 
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
-        fragment_view = inflater.inflate(R.layout.sign_up, container, false);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_update_profile);
 
         connectivity();
+        getDataFromFireBase();
 
-        //underline the already have one text view
-        tvAlreadyHaveOne.setPaintFlags(tvAlreadyHaveOne.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         rlCloseKeyboard.setOnClickListener(this);
         ivAddUserProfile.setOnClickListener(this);
-        btnUserSignUp.setOnClickListener(this);
-        tvAlreadyHaveOne.setOnClickListener(this);
+        btnUpdate.setOnClickListener(this);
 
-        return fragment_view;
+
+
     }
 
+
     private void connectivity() {
-        context = getActivity();
+        context = this;
 
 
-        // selectImagesAdapter = new SelectImagesAdapter(context);
+        rlCloseKeyboard = (RelativeLayout) findViewById(R.id.rl_hide_soft_keyboard);
+        ivUserProfile = (ImageView) findViewById(R.id.iv_user_profile);
+        ivAddUserProfile = (ImageView)findViewById(R.id.iv_add_user_profile);
+        etUserFirstName = (EditText) findViewById(R.id.et_first_name);
+        etUserLastName = (EditText) findViewById(R.id.et_last_name);
+        etUserEmail = (EditText) findViewById(R.id.et_user_email);
+        metUserPhoneNo = (MaskEditText)findViewById(R.id.met_phone);
+        etUserCity = (EditText)findViewById(R.id.et_city);
+        etUserCountry=(EditText)findViewById(R.id.et_country);
+        etUserLocation = (EditText)findViewById(R.id.et_location);
+        btnUpdate = (Button)findViewById(R.id.btn_update);
+    }
+
+    private void getDataFromFireBase() {
+                FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            cSignUpData = documentSnapshot.toObject(CSignUpData.class);
+                            showDataOnView();
+                        }
+                    }
+                });
+    }
+
+    private void showDataOnView() {
+
+        etUserFirstName.setText(cSignUpData.getsUserFirstName());
+        etUserLastName.setText(cSignUpData.getsUserLastName());
+        etUserEmail.setText(cSignUpData.getsEmail());
+        metUserPhoneNo.setText(cSignUpData.getsPhoneNo());
+        etUserCity.setText(cSignUpData.getsCity());
+        etUserCountry.setText(cSignUpData.getsCountry());
+        etUserLocation.setText(cSignUpData.getsLocation());
 
 
-        rlCloseKeyboard = (RelativeLayout) fragment_view.findViewById(R.id.rl_hide_soft_keyboard);
-        ivUserProfile = (ImageView) fragment_view.findViewById(R.id.iv_user_profile);
-        ivAddUserProfile = (ImageView) fragment_view.findViewById(R.id.iv_add_user_profile);
-        etUserFirstName = (EditText) fragment_view.findViewById(R.id.et_first_name);
-        etUserLastName = (EditText) fragment_view.findViewById(R.id.et_last_name);
-        etUserEmail = (EditText) fragment_view.findViewById(R.id.et_user_email);
-        metUserPhoneNo = (MaskEditText) fragment_view.findViewById(R.id.met_phone);
-        etUserCity = (EditText) fragment_view.findViewById(R.id.et_city);
-        etUserLocation = (EditText) fragment_view.findViewById(R.id.et_location);
-        etUserPassword = (EditText) fragment_view.findViewById(R.id.et_user_password);
-        etUserConfirmPassword = (EditText) fragment_view.findViewById(R.id.et_confirm_password);
-        tvAlreadyHaveOne = (TextView) fragment_view.findViewById(R.id.tv_already_have_one);
-        btnUserSignUp = (Button) fragment_view.findViewById(R.id.btn_sign_up);
+        Glide.with(getApplicationContext())
+                .load(cSignUpData.getsUserProfileImageUri())
+                .into(ivUserProfile);
+
+        uriUserProfile = Uri.parse(cSignUpData.getsUserProfileImageUri());
+        sUserProfileName= cSignUpData.getsUserProfileImageUri();
+
     }
 
     @Override
@@ -113,13 +135,8 @@ public class FUserProfile extends Fragment implements View.OnClickListener {
             hideSoftKeyboard(v);
         } else if (v.getId() == R.id.iv_add_user_profile) {
             profilePicture();
-        } else if (v.getId() == R.id.btn_sign_up) {
+        } else if (v.getId() == R.id.btn_update) {
             signUp();
-        } else if (v.getId() == R.id.tv_already_have_one) {
-            assert getFragmentManager() != null;
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.LogInSignUp, new LogIn());
-            ft.commit();
         }
     }
 
@@ -176,12 +193,7 @@ public class FUserProfile extends Fragment implements View.OnClickListener {
     }
 
     private void openCamera() {
-        /*ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "Profile Image");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From Camera");
-        uriManagerProfile = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);*/
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //i.putExtra(MediaStore.EXTRA_OUTPUT, uriManagerProfile);
         startActivityForResult(i, IMAGE_REQUEST_CODE);
     }
 
@@ -222,9 +234,21 @@ public class FUserProfile extends Fragment implements View.OnClickListener {
         }
 
         //FireBase work
-        new CUploadUserDataToFireBase(context, uriUserProfile, sUserEmail, sPassword,
-                sUserProfileName, sUserProfileDownloadUri,
-                sUserFirstName, sUserLastName, sUserPhoneNo, sUserCity, sUserLocation);
+
+        CSignUpData cSignUpDataNew=new CSignUpData(sUserFirstName,sUserLastName,sUserEmail,sUserPhoneNo,sUserCity,sUserCountry,sUserLocation);
+
+        //FireBase work
+
+        if(uriUserProfile.equals(Uri.parse(cSignUpData.getsUserProfileImageUri())))
+        {
+            cSignUpDataNew.setsUserProfileImageUri(cSignUpData.getsUserProfileImageUri());
+            new CUploadUserDataToFireBase(context,cSignUpDataNew);
+
+        }
+        else
+        {
+            new CUploadUserDataToFireBase(context, uriUserProfile,sUserProfileName,Uri.parse(cSignUpData.getsUserProfileImageUri()),cSignUpDataNew);
+        }
 
 
     }
@@ -235,9 +259,8 @@ public class FUserProfile extends Fragment implements View.OnClickListener {
         sUserEmail = etUserEmail.getText().toString().trim();
         sUserPhoneNo = metUserPhoneNo.getText().toString().trim();
         sUserCity = etUserCity.getText().toString().trim();
+        sUserCountry=etUserCountry.getText().toString().trim();
         sUserLocation = etUserLocation.getText().toString().trim();
-        sPassword = etUserPassword.getText().toString().trim();
-        sConfirmPassword = etUserConfirmPassword.getText().toString().trim();
 
 
     }
@@ -281,27 +304,18 @@ public class FUserProfile extends Fragment implements View.OnClickListener {
         } else
             etUserCity.setBackground(context.getResources().getDrawable(R.drawable.round_white));
 
+        if (!signUpValidation.validateCity(etUserCountry, sUserCountry)) {
+            etUserCountry.setBackground(context.getResources().getDrawable(R.drawable.round_red));
+            return false;
+        } else
+            etUserCountry.setBackground(context.getResources().getDrawable(R.drawable.round_white));
+
         if (!signUpValidation.validateLocation(etUserLocation, sUserLocation)) {
             etUserLocation.setBackground(context.getResources().getDrawable(R.drawable.round_red));
             return false;
         } else
             etUserLocation.setBackground(context.getResources().getDrawable(R.drawable.round_white));
 
-        if (!signUpValidation.ValidatePassword(etUserPassword, sPassword)) {
-            etUserPassword.setBackground(context.getResources().getDrawable(R.drawable.round_red));
-            return false;
-        } else
-            etUserPassword.setBackground(context.getResources().getDrawable(R.drawable.round_white));
-
-        if (!signUpValidation.validateConfirmPassword(etUserConfirmPassword, sConfirmPassword, sPassword)) {
-            etUserConfirmPassword.setBackground(context.getResources().getDrawable(R.drawable.round_red));
-            return false;
-        } else
-            etUserConfirmPassword.setBackground(context.getResources().getDrawable(R.drawable.round_white));
-
-        //Intent i=new Intent(getContext(), DashBoard.class);
-        //startActivity(i);
-        //LogInSignUp.fin.finish();
         return true;
 
     }
@@ -357,7 +371,8 @@ public class FUserProfile extends Fragment implements View.OnClickListener {
                     } catch (Exception e) {
                         Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                } else {
+                }
+                else {
                     Toast.makeText(context, "Picture wasn't Selected!", Toast.LENGTH_SHORT).show();
                 }
 

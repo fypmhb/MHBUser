@@ -21,8 +21,16 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".Activities.FavouritesHallMarquee"
-        android:label="Favourites">
+        <activity android:name=".Activities.UpdatePassword">
+        </activity>
+        <activity android:name=".Activities.UpdateProfile">
+        </activity>
+        <activity android:name=".Activities.Profile">
+        </activity>
+        <activity
+                android:name=".Activities.FavouritesHallMarquee"
+                android:label="Favourites"
+                android:parentActivityName=".Activities.DashBoard">
         </activity>
         <activity
                 android:name=".Activities.BookingDetail"

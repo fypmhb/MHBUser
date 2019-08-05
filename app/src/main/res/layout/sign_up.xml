@@ -98,6 +98,7 @@
             android:hint="  Email"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
+            android:drawablePadding="@dimen/_5sdp"
             android:padding="@dimen/_5sdp" />
 
         <com.santalu.maskedittext.MaskEditText
@@ -111,6 +112,7 @@
             android:hint="  Phone Number"
             android:imeOptions="actionNext"
             android:inputType="phone"
+            android:drawablePadding="@dimen/_5sdp"
             android:padding="@dimen/_5sdp"
             app:met_mask="+92###########" />
 
@@ -125,6 +127,7 @@
             android:hint="  City"
             android:imeOptions="actionNext"
             android:inputType="text"
+            android:drawablePadding="@dimen/_5sdp"
             android:padding="@dimen/_5sdp" />
 
         <EditText
@@ -138,6 +141,7 @@
             android:hint="  Country"
             android:imeOptions="actionNext"
             android:inputType="text"
+            android:drawablePadding="@dimen/_5sdp"
             android:padding="@dimen/_5sdp" />
 
         <EditText
@@ -151,6 +155,7 @@
             android:hint="  Location"
             android:imeOptions="actionNext"
             android:inputType="text"
+            android:drawablePadding="@dimen/_5sdp"
             android:padding="@dimen/_5sdp" />
 
         <EditText
@@ -164,6 +169,7 @@
             android:hint="  Password"
             android:imeOptions="actionNext"
             android:inputType="textPassword"
+            android:drawablePadding="@dimen/_5sdp"
             android:padding="@dimen/_5sdp" />
 
         <EditText
@@ -177,6 +183,7 @@
             android:hint="  Confirm Password"
             android:imeOptions="actionNext"
             android:inputType="textPassword"
+            android:drawablePadding="@dimen/_5sdp"
             android:padding="@dimen/_5sdp" />
 
         <Button

@@ -12,10 +12,10 @@ import com.example.mhbuser.Notification.APIService;
 import com.example.mhbuser.Notification.Sending.*;
 import com.example.mhbuser.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,26 +60,22 @@ public class CUplaodBookingDetailToFireBase {
 
         FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
         firebaseFirestore.collection("Booking Requests")
-                .document(sHallMarquee)
-                .collection(sHallId)
+                .document(sUserId)
+                .collection(sHallMarquee)
+                .document(sHallId)
+                .collection("Sub Halls")
                 .document(sSubHallId)
-                .collection(sUserId)
-                .document("Booking Details")
-                .set(cBookingData).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful())
-                {
-                   // sendNotification();
-                    context.startActivity(new Intent(context, DashBoard.class));
-                    ((Activity)context).finish();
-                    HallMarqueeShowDetail.fin.finish();
-                    DashBoard.fin.finish();
-
-                }
-
-            }
-        });
+                .set(cBookingData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        sendNotification();
+                        context.startActivity(new Intent(context, DashBoard.class));
+                        ((Activity)context).finish();
+                        HallMarqueeShowDetail.fin.finish();
+                        DashBoard.fin.finish();
+                    }
+                });
 
 
 
@@ -97,47 +93,41 @@ public class CUplaodBookingDetailToFireBase {
 
     private void sendNotification() {
 
-        FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
+        final FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
         firebaseFirestore.collection("Tokens")
+                .document(sHallId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                         if(task.isSuccessful())
                         {
-                            QuerySnapshot document=task.getResult();
-                            assert document != null;
-                            for (QueryDocumentSnapshot querySnapshot:document){
-
-                                if(querySnapshot.exists())
-                                {
-                                    if(querySnapshot.getId().equals(sUserId));
-                                    Token token=(Token)querySnapshot.getData();
-                                    Data data=new Data(sUserId, R.drawable.ic_admin_profile,"User Name","Hall Booking",sHallId);
-                                    Sender sender=new Sender(data,token.getToken());
-                                    apiService.sendNotification(sender)
-                                            .enqueue(new Callback<MyResponse>() {
-                                                @Override
-                                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                                    if(response.code()==200)
-                                                    {
-                                                        if(response.body().success!=1)
-                                                        {
-                                                            Toast.makeText(context, "Notification not sent", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                        else
-                                                            Toast.makeText(context, "Notification Sent", Toast.LENGTH_SHORT).show();
-                                                    }
+                            Token token=task.getResult().toObject(Token.class);
+                            Data data=new Data(sUserId, R.drawable.ic_admin_profile,"User Name","Hall Booking",sHallId);
+                            assert token != null;
+                            Sender sender=new Sender(data,token.getToken());
+                            apiService.sendNotification(sender)
+                                    .enqueue(new Callback<MyResponse>() {
+                                        @Override
+                                        public void onResponse(@NonNull Call<MyResponse> call, @NonNull Response<MyResponse> response) {
+                                            if(response.code()==200)
+                                            {
+                                                assert response.body() != null;
+                                                if(response.body().success!=1)
+                                                {
+                                                    Toast.makeText(context, "Notification not sent", Toast.LENGTH_SHORT).show();
                                                 }
+                                                else
+                                                    Toast.makeText(context, "Notification Sent", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
 
-                                                @Override
-                                                public void onFailure(Call<MyResponse> call, Throwable t) {
+                                        @Override
+                                        public void onFailure(Call<MyResponse> call, Throwable t) {
 
-                                                }
-                                            });
-                                }
-                            }
+                                        }
+                                    });
                         }
                     }
                 });
